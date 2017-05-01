@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class ShortenURL(models.Model):
     id = models.BigAutoField(primary_key=True)
+    shortened_id = models.BigIntegerField(unique=True)
     url = models.CharField(max_length=2083)
     created_by = models.ForeignKey(User)
     date_created = models.DateTimeField('date when URL was shortened')
