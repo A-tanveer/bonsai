@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Bonsai your URL{% endblock %}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" >
+    <link rel="stylesheet" type="text/css" href="{% static 'URL_Shortner/css/custom.css' %}" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+{#<script type="text/javascript">#}
+{#    $(function() {#}
+{#        $('#submitButton').click(function() {#}
+{#            $.ajax({#}
+{#                type: "POST",#}
+{#                url: "/makeshort/",#}
+{#                data: {#}
+{#                    'url' : $('#url').val(),#}
+{#                    'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()#}
+{#                },#}
+{#                success: returnSuccess,#}
+{#                dataType: 'json'#}
+{#            });#}
+{#        });#}
+{#    });#}
+{##}
+{#    function returnSuccess(data, textStatus, jqXHR) {#}
+{#        if(data.url) {#}
+{#            $('#url-result').text(data.url);#}
+{#            $('#url').val("");#}
+{#        } else {#}
+{#            $('#url-result').text("Do not submit blank.");#}
+{#        }#}
+{#    }#}
+{##}
+{#</script>#}
+
+<body id="bdy">
+    <div id="wrap">
+        <header>
+{#            <h1><a href="{% url 'bonsai:index' %}">Bonsai The URLs</a></h1>#}
+            <h1>Bonsai The URLs</h1>
+        </header>
+        <div id="content">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

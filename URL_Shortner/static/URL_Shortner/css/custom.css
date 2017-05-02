@@ -1,0 +1,31 @@
+#content {
+    width: inherit;
+    height: inherit;
+    margin-top: 20px;
+    margin-bottom: 60px;
+}
+
+a:hover{
+    text-decoration: none;
+    on: none;
+}
+
+#header {
+    border-bottom: 1px solid #eeeeee;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    clear: both;
+}
+
+#wrap {
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    margin: 5px 10px 10px 10px;
+    padding: 10px;
+    text-align: center;
+}
+#url-result {
+    color: #00e000;
+    /*display: none;*/
+}

@@ -1,6 +1,6 @@
 from django.conf.urls import url
-
 from . import views
+
 
 urlpatterns = [
     # url patterns should be more than 6 characters long

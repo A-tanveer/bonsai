@@ -1,13 +1,16 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from URL_Shortner.models import ShortenURL, URLVisits
 from URL_Shortner.short_url import ShortUrl
+from django.views.decorators.csrf import csrf_protect
+from django.template import loader
 
 
 def index(request):
     # c = {}
-    # c.update(cs)
-    return HttpResponse("This is Shortner index")
+    # c.update(csrf_protect)
+    template = loader.get_template('URL_Shortner/index.html')
+    return HttpResponse(template.render())
 
 
 def redirect_url(request, short):
@@ -24,4 +27,21 @@ def shortened_form(request):
 
 
 def sorten_url(request):
+    url = request.POST.get('url', '')
+    # if url==VALID_URL:
+    #     id = insert url into DB and get its id
+    #     short_obj = ShortUrl()
+    #     string = short_obj(id)
+    #     insert into DB
+    #     show shortened url
     return HttpResponse("short this URL")
+
+
+def custom_url(reuest):
+    url, custom = reuest.POST.get('url', 'custom', '')
+    short_obj = ShortUrl()
+    short_id = short_obj.decode(custom)
+    # if short_id not in DB
+        # if url==VALID_URL:
+        #     insert into DB
+        #     return url

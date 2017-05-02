@@ -1,0 +1,18 @@
+{% extends "URL_Shortner/base.html" %}
+
+{% block title %}Bonsai Url - Make bonsai of your URL{% endblock %}
+
+{% block content %}
+    <div class="panel panel-default">
+        <div class="panel-body" style="height: 100%">
+            <div class="col-sm-9">
+                <input type="text" name="url" id="url" class="form-control input-sm"/>
+            </div>
+            <div class="col-sm-3">
+{#                {% csrf_token %}#}
+                <button id="submitButton" class="btn btn-primery">BONSAI</button></p>
+            </div>
+        </div>
+    <div class="panel-footer"><span id="url-result">Paste URL above and click BONSAI!</span> </div>
+    </div>
+{% endblock %}
