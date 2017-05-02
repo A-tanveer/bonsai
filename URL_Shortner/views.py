@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from URL_Shortner.models import ShortenURL, URLVisits
+
+
 def index(request):
-    c = {}
-    c.update(cs)
+    # c = {}
+    # c.update(cs)
     return HttpResponse("This is Shortner index")
 
 
@@ -26,7 +28,7 @@ class short_url():
 
     def encode(self, number):
         string = ''
-        while(number > 0):
+        while number > 0:
             string = self._alphabet[number % self._base] + string
             number //= self._base
         return string
@@ -35,5 +37,4 @@ class short_url():
         number = 0
         for char in string:
             number = number * self._base + self._alphabet.index(char)
-
         return number
