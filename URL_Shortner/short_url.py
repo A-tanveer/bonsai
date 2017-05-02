@@ -1,8 +1,9 @@
 
 class ShortUrl():
 
-    _alphabet = '23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ-_'
-    _base = len(_alphabet)
+    def __init__(self):
+        self._alphabet = '23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ-_'
+        self._base = len(self._alphabet)
 
     def encode(self, number):
         string = ''
