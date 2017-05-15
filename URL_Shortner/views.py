@@ -1,15 +1,15 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response, redirect, render
-from django.db.models import F
-from django.core.validators import URLValidator
+import datetime
+
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+from django.db.models import F
+from django.shortcuts import get_object_or_404, render_to_response, redirect, render
+from django.template import RequestContext
 
 from URL_Shortner.models import ShortenURL, URLVisits
 from URL_Shortner.short_url import ShortUrl
-import datetime
 
-from django.views.decorators.csrf import csrf_protect
-from django.template import loader, RequestContext
+
 # from django.contrib.gis.geoip import GeoIP
 
 
@@ -61,15 +61,15 @@ def redirect_url(request, short):
 
     ShortenURL.objects.filter(short_url=short).update(hits=F('hits')+1)
 
-    if not URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today()).exists():
-        x = URLVisits()
-        x.ip = get_client_ip(request)
-        x.url_id_fk = url_obj
-        # x.from_country =  # later
-        # x.referral = 'Get referral web domain name'  # skip this for now
-        x.save()
+    # if not URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today()).exists():
+    x = URLVisits()
+    x.ip = get_client_ip(request)
+    x.url_id_fk = url_obj
+    # x.from_country =  # later
+    # x.referral = 'Get referral web domain name'  # skip this for now
+    x.save()
 
-    URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today).update(hits=F('hits')+1)
+    # URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today).update(hits=F('hits')+1)
 
     return redirect(url_obj.url)
 
