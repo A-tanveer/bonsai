@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.db.models import F
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
@@ -10,6 +10,7 @@ import datetime
 
 from django.views.decorators.csrf import csrf_protect
 from django.template import loader, RequestContext
+# from django.contrib.gis.geoip import GeoIP
 
 
 def index(request):
@@ -31,8 +32,10 @@ def index(request):
         if not url_error:
             shortened_db = ShortenURL()
             short = ShortUrl()
-            shortened_db.short_url = short.encode(shortened_db.id)
+
             shortened_db.url = url_input
+            shortened_db.save()
+            shortened_db.short_url = short.encode(shortened_db.id)  # custom url isn't yet supported
             shortened_db.shortened_id = short.decode(shortened_db.short_url)
             shortened_db.save()
             shortened_url = request.build_absolute_uri(shortened_db.short_url)
@@ -40,14 +43,19 @@ def index(request):
 
     # template = loader.get_template('URL_Shortner/index.html')
     # render to response should be updated for django versions
-    return render_to_response('URL_Shortner/index.html',
-                              {'error':url_error, 'url':url_input, 'short_url':shortened_url},
-                              context=request)
+    return render(request, 'URL_Shortner/index.html', {'error':url_error, 'url':url_input, 'short_url':shortened_url})
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 
 def redirect_url(request, short):
-
-    print(short)
 
     url_obj = get_object_or_404(ShortenURL, short_url=short)
 
@@ -55,10 +63,10 @@ def redirect_url(request, short):
 
     if not URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today()).exists():
         x = URLVisits()
-        x.from_country = "Get country from IP and insert here"
-        x.visit_date = datetime.date.today()
-        x.referral = 'Get referral web domain name'
+        x.ip = get_client_ip(request)
         x.url_id_fk = url_obj
+        # x.from_country =  # later
+        # x.referral = 'Get referral web domain name'  # skip this for now
         x.save()
 
     URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today).update(hits=F('hits')+1)
@@ -77,21 +85,6 @@ def stats(request, short):
     # render to response should be updated for django versions
     return render_to_response("stats.html", {"stats": stats, "link": short_db, "link_url": link_url},
                               context_instance=RequestContext(request))
-
-
-def shortened_form(request):
-    return HttpResponse("View shortened url")
-
-
-def sorten_url(request):
-    url = request.POST.get('url', '')
-    # if url==VALID_URL:
-    #     id = insert url into DB and get its id
-    #     short_obj = ShortUrl()
-    #     string = short_obj(id)
-    #     insert into DB
-    #     show shortened url
-    return HttpResponse("short this URL")
 
 
 def custom_url(reuest):
