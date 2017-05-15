@@ -40,7 +40,7 @@
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
-                <a href="/" class="brand">TinyLink</a>
+                <a href="/" class="brand">BONSAI</a>
             </div>
         </div>
     </div>
@@ -50,7 +50,7 @@
             <div class="row-fluid">
                 <div class="row">
                     <div class="span12">
-                        <h1>Shortern a link</h1>
+                        <h1>Bonsai any link</h1>
                     </div>
                 </div>
                 <br />
@@ -61,27 +61,44 @@
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="span5">
-                                        <div class="control-group {% if error %}error{% endif %}">
+                                        <div class="control-group ">
                                             <input type="text" name="url"
-                                                   placeholder="http://google.com"
+                                                   placeholder="Paste Your URL here and make bonsai"
                                                    value="{% if url %}{{ url }}{% endif %}"
                                                    id="url_input"
                                                    class="span5">
                                             {% if error %}
-                                                <span class="help-inline">Please enter a valid URL</span>
+                                                <span class="form-control input-lg">Please enter a valid URL</span>
+                                            {% endif %}
+                                            <p></p>
+                                            <input type="text" name="custom"
+                                                   placeholder="customized short url"
+                                                   id="custom_short"
+                                                   class="span5">
+                                            {% if cust_err %}
+                                                <span class="help-inline">This Short URL already exists</span>
+                                            {% endif %}
+                                            {% if inv_err %}
+                                                <span class="help-inline">This Short URL consists invalid characters. Valid characters are:
+                                                    <br/>23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ
+                                                <br/>we are not letting vowels and some other character to prevent offensive or confusing url generation.</span>
                                             {% endif %}
                                         </div>
                                     </div>
+                                    <br/>
                                     <div class="span2">
-                                        <button type="submit" class="btn btn-success">Submit</button>
+                                        <button type="submit" class="btn btn-success">BONSAI</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
-                    {% if shorturl %}
+                        {% if short_url %}
                         <h2>Success!</h2>
-                        <p>Shortened URL: <a href="{{ shorturl }}">{{ shorturl }}</a></p>
-                        <p>View statistics: <a href="{{ shorturl }}/stats">{{ shorturl }}/stats</a></p>
+                            <form action="/action_page.php">
+                                Your BONSAI Url is ready: <input type="text" name="country"
+                                                                 value={{ short_url }} readonly>
+                            </form>
+                            <p>statistics: !l!a!t!e!r! <a href="{{ shorturl }}/stats">{{ shorturl }}/stats</a></p>
                     {% endif %}
                     </div>
                 </div>

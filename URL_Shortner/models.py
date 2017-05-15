@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 # Create your models here.
@@ -31,4 +31,7 @@ class URLVisits(models.Model):
     ip = models.GenericIPAddressField()
     # from_country = models.CharField(max_length=45)
     # referral = models.CharField(max_length=71)  # will do it later
+    browser = models.CharField(default='Unknown', max_length=50)
+    platform = models.CharField(default='Unknown', max_length=50)
+    device = models.CharField(default='Unknown', max_length=50)
     url_id_fk = models.ForeignKey(ShortenURL, on_delete=models.CASCADE)
