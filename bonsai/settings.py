@@ -125,5 +125,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = '/URL_Shortner/static/'
+STATIC_URL = "/static/"
 GEOIP_PATH = '/geo/'

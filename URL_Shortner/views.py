@@ -19,6 +19,7 @@ def index(request):
     char_err = False
     url_input = ''
     shortened_url = ''
+    custom_short = False
 
     if request.method == 'POST':
         validator = URLValidator()
@@ -59,7 +60,7 @@ def index(request):
 
     # template = loader.get_template('URL_Shortner/index.html')
     # render to response should be updated for django versions
-    return render(request, 'URL_Shortner/index.html', {'error': url_error, 'inv_err': char_err,
+    return render(request, 'URL_Shortner/home.html', {'error': url_error, 'inv_err': char_err,
                                                        'cust_err': custom_error, 'url': url_input,
                                                        'short_url': shortened_url})
 
