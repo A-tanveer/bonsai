@@ -1,16 +1,60 @@
 import datetime
 
+from django.contrib.auth import login
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.db.models import F
 from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.template import RequestContext
+from django.views.generic import View
 
-from URL_Shortner.models import ShortenURL, URLVisits
-from URL_Shortner.short_url import ShortUrl
+from .forms import UserForm
+from .models import ShortenURL, URLVisits
+from .short_url import ShortUrl
+
+
+class UserFormView(View):
+    form_class = UserForm
+    template = 'URL_Shortner/signin.html'
+
+    # display blank form
+    def get(self, request, sign_in_or_up):
+        form = self.form_class(None)
+        return render(request, self.template, {'form': form})
+
+    # process data
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+
+            user = form.save(commit=False)
+
+            username = form.cleaned_data['usename']
+            password = form.cleaned_data['password']
+            user.username = username
+            user.set_password(password)
+            user.save()
+
+            if user is not None:
+
+                if user.is_active:
+                    login(request, user)
+                    return redirect('URL_Shortner:index')
+
+        return render(request, self.template, {'form': form})
 
 
 # from django.contrib.gis.geoip import GeoIP
+def user_reg(request, sign_in_or_up):
+    sign_val = sign_in_or_up
+
+    username, password = None, None
+    email = None
+    first_name, last_name = None, None
+    if request.method == 'POST':
+        pass
+    return render(request, 'URL_Shortner/signin.html', {'val': sign_in_or_up})
 
 
 def index(request):
@@ -25,7 +69,7 @@ def index(request):
         validator = URLValidator()
         # here presence of a second argument should be checked. if present this thing will be different
         try:
-            url_input =request.POST.get('url', None)
+            url_input = request.POST.get('url', None)
             custom_short = request.POST.get('custom', None)
             if not url_input:
                 url_error = True
@@ -57,12 +101,11 @@ def index(request):
                     shortened_url = request.build_absolute_uri(shortened_db.short_url)
                     url_input = ''
 
-
     # template = loader.get_template('URL_Shortner/index.html')
     # render to response should be updated for django versions
     return render(request, 'URL_Shortner/home.html', {'error': url_error, 'inv_err': char_err,
-                                                       'cust_err': custom_error, 'url': url_input,
-                                                       'short_url': shortened_url})
+                                                      'cust_err': custom_error, 'url': url_input,
+                                                      'short_url': shortened_url})
 
 
 def get_client_ip(request):
@@ -78,7 +121,7 @@ def redirect_url(request, short):
     from user_agents import parse
     url_obj = get_object_or_404(ShortenURL, short_url=short)
 
-    ShortenURL.objects.filter(short_url=short).update(hits=F('hits')+1)
+    ShortenURL.objects.filter(short_url=short).update(hits=F('hits') + 1)
 
     # if not URLVisits.objects.filter(url_id_fk=url_obj, visit_date=datetime.date.today()).exists():
     x = URLVisits()
@@ -97,7 +140,7 @@ def redirect_url(request, short):
 def stats(request, short):
     short_db = get_object_or_404(ShortenURL, short_url=short)
 
-    stats = URLVisits.objects.filter(day__gt=datetime.date.today()-datetime.timedelta(days=30),
+    stats = URLVisits.objects.filter(day__gt=datetime.date.today() - datetime.timedelta(days=30),
                                      url_id_fk=short_db).all()
 
     link_url = request.build_absolute_uri("/" + short_db.short_url)  # make it an absolute one
@@ -105,13 +148,3 @@ def stats(request, short):
     # render to response should be updated for django versions
     return render_to_response("stats.html", {"stats": stats, "link": short_db, "link_url": link_url},
                               context_instance=RequestContext(request))
-
-
-def custom_url(reuest):
-    url, custom = reuest.POST.get('url', 'custom', '')
-    short_obj = ShortUrl()
-    short_id = short_obj.decode(custom)
-    # if short_id not in DB
-        # if url==VALID_URL:
-        #     insert into DB
-        #     return url
