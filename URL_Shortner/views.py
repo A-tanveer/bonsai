@@ -20,7 +20,8 @@ class UserFormView(View):
     # display blank form
     def get(self, request, sign_in_or_up):
         form = self.form_class(None)
-        return render(request, self.template, {'form': form})
+        return render(request, self.template, {'form': form,
+                                               'val': sign_in_or_up})
 
     # process data
     def post(self, request):
