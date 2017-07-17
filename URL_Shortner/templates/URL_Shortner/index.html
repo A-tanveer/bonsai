@@ -1,0 +1,72 @@
+{% extends 'Url_Shortner/base.html' %}
+
+{% block rightNav %}
+    {% if user.is_authenticated %}
+        <ul class="nav navbar-nav">
+            <li><h3>{{ user.get_username }} <span class="sr-only">    </span></h3></li>
+            <li class="active"><a href="/usersignout">Logout</a></li>
+            <span class="sr-only">(current)</span></a></li>
+        </ul>
+
+    {% else %}
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/usersignin">Log In<span class="sr-only">(current)</span></a></li>
+            <li class="active"><a href="/usersignup">Sign Up<span class="sr-only"></span></a></li>
+        </ul>
+
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+
+    <div style="float: inherit">
+        <p style="font-size: 50px; font-weight: 200; color: #ffffff;"> cc </p>
+        <p style="color: lightgreen; font-size: 50px; font-weight: 200;">PASTE AND BONSAI YOUR LINK</p>
+        <p style="color: cornflowerblue">Create bonsai url for every Url you have.<br></p>
+    </div>
+    <div class="fade in">
+        <form action="/" method="POST" novalidate="novalidate">
+            {% csrf_token %}
+            <fieldset>
+                <form>
+                    <div class="form-group">
+                        <input type="url" class="form-control" name="url" value="{% if url %}{{ url }}{% endif %}"
+                               placeholder="Paste Your URL here" style="background-color: white">
+                        {% if error %}
+                            <span class="form-control input-lg"
+                                  style="background-color: transparent; color: red">Please enter a valid URL</span>
+                        {% endif %}
+                    </div>
+                    {% if user.is_authenticated %}
+                        <div class="form-group">
+                            <label>Custom Short: </label>
+                            <input type="text" class="form-control" name="custom" placeholder="customized short url"
+                                   style="background-color: white">
+                            {% if cust_err %}
+                                <span class="form-control input-lg" style="background-color: transparent; color: red">This Short URL already exists</span>
+                            {% endif %}
+                            {% if inv_err %}
+                                {#                                    <span class="help-inline" style="background-color: transparent; color: red">This Short URL consists invalid characters. Valid characters are:#}
+                                {#                                        <br/>23456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ#}
+                                {#                                        <br/>we are not letting vowels and some other character to prevent offensive or confusing url generation.</span>#}
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </form>
+
+                <div class="span2">
+                    <br>
+                    <button type="submit" class="btn btn-success" style="width: 200px">BONSAI</button>
+                </div>
+                {% if short_url %}
+                    <span class="form-control input-lg" style="background-color: transparent; color: lightcyan">Success!
+                        Your Bonsai Url is: <input type="text" name="country" value={{ short_url }} readonly style=
+                                "background-color: transparent; border-color: transparent">
+                    </span>
+                    {#                            <p>statistics: !l!a!t!e!r! <a href="{{ shorturl }}/stats">{{ shorturl }}/stats</a></p>#}
+                {% endif %}
+
+            </fieldset>
+        </form>
+    </div>
+{% endblock %}

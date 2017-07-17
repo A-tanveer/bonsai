@@ -1,172 +1,46 @@
-<!DOCTYPE html>
+{% extends 'Url_Shortner/base.html' %}
 
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
-<!--[if !IE]><!-->
-<html lang="en"> <!--<![endif]-->
-<head>
-    <title>Bonsai all your Url's</title>
-    <!-- Meta -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="An application that shorten Url's.">
-    <meta name="author" content="Tanveer Ahmed">
+{% block rightNav %}
+    {% if user.is_authenticated %}
+        <ul class="nav navbar-nav">
+            <li><h3>{{ user.get_username }} <span class="sr-only">    </span></h3></li>
+            <li class="active"><a href="/usersignout">Logout</a></li>
+            <span class="sr-only">(current)</span></a></li>
+        </ul>
 
-    {#  static files  #}
-    {% load static %}
-    <link rel="shortcut icon" type="image/icon" href="{% static 'URL_Shortner/img/bonsai.ico' %}">
+    {% else %}
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/usersignup">Sign Up<span class="sr-only"></span></a></li>
+        </ul>
 
-    <!-- Web Fonts -->
-    <link rel='stylesheet' type='text/css'
-          href='//fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=cyrillic,latin'>
+    {% endif %}
+{% endblock %}
 
-    <!-- CSS Global Compulsory -->
-    <link rel="stylesheet" href="{% static 'URL_Shortner/plugins/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'URL_Shortner/css/style.css' %}">
-
-    <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="{% static 'URL_Shortner/plugins/animate.css' %}">
-    <link rel="stylesheet" href="{% static 'URL_Shortner/plugins/line-icons/line-icons.css' %}">
-    <link rel="stylesheet" href="{% static 'URL_Shortner/plugins/font-awesome/css/font-awesome.min.css' %}">
-
-    <!-- CSS Page Style -->
-    <link rel="stylesheet" href="{% static 'URL_Shortner/css/pages/page_log_reg_v2.css' %}">
-
-    <!-- CSS Theme -->
-    <link rel="stylesheet" href="{% static 'URL_Shortner/css/theme-colors/default.css" id="style_color' %}">
-    <link rel="stylesheet" href="{% static 'URL_Shortner/css/theme-skins/dark.css' %}">
-
-    <!-- CSS Customization -->
-    <link rel="stylesheet" href="{% static 'URL_Shortner/css/custom.css' %}">
-</head>
-<body>
-<!--=== Content Part ===-->
-<div class="container">
-    <!--Reg Block-->
-    <div class="reg-block" style="width: 70%; margin-left: 15%;">
-        <div class="reg-block-header" style="text-align: center">
-            {% if val == 'usersignin' %}
-                <h2>Sign In<br><br></h2>
-            {% else %}
-
-                <h2>Sign Up<br><br></h2>
-            {% endif %}
-            <ul class="social-icons text-center">
-                <li><a class="rounded-x social_facebook" data-original-title="Facebook" href="#"></a></li>
-                <li><a class="rounded-x social_twitter" data-original-title="Twitter" href="#"></a></li>
-                <li><a class="rounded-x social_googleplus" data-original-title="Google Plus" href="#"></a></li>
-                <li><a class="rounded-x social_linkedin" data-original-title="Linkedin" href="#"></a></li>
-            </ul>
-            {% if val == 'usersignin' %}
-                <p>Don't Have Account? <a class="color-green" href="/createnewuser">Sign Up</a> now.</p>
-            {% endif %}
-            {% if val == 'createnewuser' %}
-                <p>Already Registered? <a class="color-green" href="/usersignin">Sign in</a> now.</p>
-            {% endif %}
-        </div>
-        {% if val == 'usersignin' %}
+{% block body %}
+    {% if err %}
+        <span style="color: red">
+            Wrong Log in credential.
+        </span>
+    {% endif %}
+    <form class="form-signin" method="post">
         {% csrf_token %}
-        <div class="input-group margin-bottom-20">
-            <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-            <input type="text" class="form-control" placeholder="Email">
-        </div>
-        <div class="input-group margin-bottom-20">
-            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-            <input type="text" class="form-control" placeholder="Password">
-        </div>
-        <hr>
+        <br>
+        <h2 class="form-signin-heading">Sign In</h2>
+        <br>
+        <label for="inputEmail" class="sr-only">User Name</label>
+        <input type="text" id="inputEmail" class="form-control" name="username" placeholder="User Name" required
+               autofocus>
+        <br>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" name="passwd" placeholder="Password" required>
+        <br>
 
-        <div class="checkbox">
-            <label>
-                <input type="checkbox">
-                <p>Always stay signed in</p>
-            </label>
-        </div>
+        {#        <div class="checkbox">#}
+        {#          <label>#}
+        {#            <input type="checkbox" value="remember-me"> Remember me#}
+        {#          </label>#}
+        {#        </div>#}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
 
-        <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                <button type="submit" class="btn-u btn-block">Log In</button>
-            </div>
-        </div>
-        {% endif %}
-        {% if val == 'createnewuser' %}
-            {% csrf_token %}
-            {#            {{ form }}#}
-            {##}
-            {#            {% for field in form %}#}
-            {#                <div class="form-group">#}
-            {#                    <div class="input-group margin-bottom-20">#}
-            {#                        <span class="input-group-addon">{{ field.errors }}</span>#}
-            {#                        <input type="{% if field.label_tag == 'Password' %}'password'{% else %}'text'{% endif %}" class="form-control" placeholder='{{ field.label_tag }}'>#}
-            {#                    </div>#}
-            {#                    <label class="control-label col-sm-2" for="song_title">{{ field.label_tag }}</label>#}
-            {#                    <div class="col-sm-10">{{ field }}</div>#}
-            {#                </div>#}
-            {#            {% endfor %}#}
-
-            <div class="input-group margin-bottom-20">
-                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                <input type="text" class="form-control" placeholder="Email">
-            </div>
-            <div class="input-group margin-bottom-20">
-                <span class="input-group-addon"><i class="fa fa-edit"></i></span>
-                <input type="text" class="form-control" placeholder="User Name">
-            </div>
-            <div class="input-group margin-bottom-20">
-                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                <input type="password" class="form-control" placeholder="Password">
-            </div>
-            <div class="input-group margin-bottom-20">
-                <span class="input-group-addon"><i class="fa fa-edit"></i></span>
-                <input type="text" class="form-control" placeholder="First Name">
-            </div>
-            <div class="input-group margin-bottom-20">
-                <span class="input-group-addon"><i class="fa fa-edit"></i></span>
-                <input type="text" class="form-control" placeholder="Last Name">
-            </div>
-
-            <div class="row">
-                <div class="col-md-10 col-md-offset-1">
-                    <button type="submit" class="btn-u btn-block">Sign Up</button>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-    <!--End Reg Block-->
-</div><!--/container-->
-<!--=== End Content Part ===-->
-
-<!-- JS Global Compulsory -->
-<script type="text/javascript" src="assets/plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="assets/plugins/jquery/jquery-migrate.min.js"></script>
-<script type="text/javascript" src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
-<!-- JS Implementing Plugins -->
-<script type="text/javascript" src="assets/plugins/back-to-top.js"></script>
-<script type="text/javascript" src="assets/plugins/backstretch/jquery.backstretch.min.js"></script>
-<!-- JS Customization -->
-<script type="text/javascript" src="assets/js/custom.js"></script>
-<!-- JS Page Level -->
-<script type="text/javascript" src="assets/js/app.js"></script>
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        App.init();
-    });
-</script>
-<script type="text/javascript">
-    $.backstretch([
-        "assets/img/bg/19.jpg",
-        "assets/img/bg/18.jpg",
-    ], {
-        fade: 1000,
-        duration: 7000
-    });
-</script>
-<!--[if lt IE 9]>
-	<script src="assets/plugins/respond.js"></script>
-	<script src="assets/plugins/html5shiv.js"></script>
-	<script src="assets/plugins/placeholder-IE-fixes.js"></script>
-	<![endif]-->
-
-
-</body>
-</html>
+{% endblock %}

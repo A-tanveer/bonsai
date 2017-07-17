@@ -1,61 +1,51 @@
 import datetime
 
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, logout
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 from django.db.models import F
 from django.shortcuts import get_object_or_404, render_to_response, redirect, render
 from django.template import RequestContext
-from django.views.generic import View
 
-from .forms import UserForm
+from .forms import SignUpForm
 from .models import ShortenURL, URLVisits
 from .short_url import ShortUrl
 
 
-class UserFormView(View):
-    form_class = UserForm
-    template = 'URL_Shortner/signin.html'
-
-    # display blank form
-    def get(self, request, sign_in_or_up):
-        form = self.form_class(None)
-        return render(request, self.template, {'form': form,
-                                               'val': sign_in_or_up})
-
-    # process data
-    def post(self, request):
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-
-            user = form.save(commit=False)
-
-            username = form.cleaned_data['usename']
-            password = form.cleaned_data['password']
-            user.username = username
-            user.set_password(password)
-            user.save()
-
-            if user is not None:
-
-                if user.is_active:
-                    login(request, user)
-                    return redirect('URL_Shortner:index')
-
-        return render(request, self.template, {'form': form})
-
-
-# from django.contrib.gis.geoip import GeoIP
-def user_reg(request, sign_in_or_up):
-    sign_val = sign_in_or_up
-
-    username, password = None, None
-    email = None
-    first_name, last_name = None, None
+# use for user registration
+def signup(request):
     if request.method == 'POST':
-        pass
-    return render(request, 'URL_Shortner/signin.html', {'val': sign_in_or_up})
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignUpForm()
+    return render(request, 'URL_Shortner/signup.html', {'form': form})
+
+
+# use for user sign in
+def signin(request):
+    login_err = False
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['passwd']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            login_err = True
+    return render(request, 'URL_Shortner/signin.html', {'err': login_err})
+
+
+def log_out(request):
+    logout(request)
+    return redirect('signin')
 
 
 def index(request):
@@ -102,9 +92,7 @@ def index(request):
                     shortened_url = request.build_absolute_uri(shortened_db.short_url)
                     url_input = ''
 
-    # template = loader.get_template('URL_Shortner/index.html')
-    # render to response should be updated for django versions
-    return render(request, 'URL_Shortner/home.html', {'error': url_error, 'inv_err': char_err,
+    return render(request, 'URL_Shortner/index.html', {'error': url_error, 'inv_err': char_err,
                                                       'cust_err': custom_error, 'url': url_input,
                                                       'short_url': shortened_url})
 
