@@ -58,7 +58,6 @@ def index(request):
 
     if request.method == 'POST':
         validator = URLValidator()
-
         try:
             url_input = request.POST.get('url', None)
             custom_short = request.POST.get('custom', None)
@@ -70,39 +69,50 @@ def index(request):
             url_error = True
 
         if not url_error:
-            shortened_db = ShortenURL()
-            short = ShortUrl()
-            shortened_db.url = url_input
-
             if not custom_short:
-                shortened_db.save()
-
-                # To do: remove bug
-                # instance of short_url already exists.
-                # change short url to something that will not be used.
-                # insert again.
-
-                shortened_db.short_url = short.encode(shortened_db.id)
-                shortened_db.shortened_id = short.decode(shortened_db.short_url)
-                shortened_db.save()
-                shortened_url = request.build_absolute_uri(shortened_db.short_url)
+                shortened_url = request.build_absolute_uri(insert_Url(url_input))
                 url_input = ''
             else:
-                if ShortenURL.objects.filter(short_url=custom_short).exists():
+                if ShortenURL.objects.filter(short_url__regex='^' + short + '$').exists():
                     custom_error = True
                 else:
-                    shortened_db.short_url = custom_short
-                    try:
-                        shortened_db.shortened_id = short.decode(custom_short)
-                    except ValueError:
-                        char_err = True
-                    shortened_db.save()
-                    shortened_url = request.build_absolute_uri(shortened_db.short_url)
+                    insert_custom(url_input, custom_short)
+                    shortened_url = request.build_absolute_uri(custom_short)
                     url_input = ''
-
     return render(request, 'URL_Shortner/index.html', {'error': url_error, 'inv_err': char_err,
                                                       'cust_err': custom_error, 'url': url_input,
                                                       'short_url': shortened_url})
+
+
+def insert_custom(url, short):
+    """
+    :param url: an valid url.
+    :param short: an user prefered unique short code
+    to do:  error checking should be done here. and raise exception.
+    """
+    urlDb = ShortenURL()
+    urlDb.url = url
+    urlDb.short_url = short
+    urlDb.shortened_id = ShortUrl().decode(short)
+    urlDb.save()
+
+
+def insert_Url(url):
+    """
+    Takes an valid url or string as input, inserts it to database and returns an unique short code.
+    :param url: valid url
+    :return: short url
+    """
+    urlDb = ShortenURL()
+    urlDb.url = url
+    urlDb.save()
+    short = ShortUrl().encode(urlDb.id)
+    if ShortenURL.objects.filter(short_url__regex='^' + short + '$').exists():
+        return insert_Url(url)
+    urlDb.short_url = short
+    urlDb.shortened_id = ShortUrl.decode(short)
+    urlDb.save()
+    return short
 
 
 def get_client_ip(request):
@@ -116,7 +126,8 @@ def get_client_ip(request):
 
 def redirect_url(request, short):
     from user_agents import parse
-    url_obj = get_object_or_404(ShortenURL, short_url=short)
+
+    url_obj = get_object_or_404(ShortenURL, short_url__regex='^' + short + '$')
 
     ShortenURL.objects.filter(short_url=short).update(hits=F('hits') + 1)
 
@@ -131,6 +142,7 @@ def redirect_url(request, short):
     # x.from_country =  # later
     # x.referral = 'Get referral web domain name'  # skip this for now
     x.save()
+
     return redirect(url_obj.url)
 
 
