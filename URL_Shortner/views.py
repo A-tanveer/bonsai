@@ -58,7 +58,7 @@ def index(request):
 
     if request.method == 'POST':
         validator = URLValidator()
-        # here presence of a second argument should be checked. if present this thing will be different
+
         try:
             url_input = request.POST.get('url', None)
             custom_short = request.POST.get('custom', None)
@@ -68,13 +68,21 @@ def index(request):
                 validator(url_input)
         except ValidationError:
             url_error = True
+
         if not url_error:
             shortened_db = ShortenURL()
             short = ShortUrl()
             shortened_db.url = url_input
+
             if not custom_short:
                 shortened_db.save()
-                shortened_db.short_url = short.encode(shortened_db.id)  # custom url isn't yet supported
+
+                # To do: remove bug
+                # instance of short_url already exists.
+                # change short url to something that will not be used.
+                # insert again.
+
+                shortened_db.short_url = short.encode(shortened_db.id)
                 shortened_db.shortened_id = short.decode(shortened_db.short_url)
                 shortened_db.save()
                 shortened_url = request.build_absolute_uri(shortened_db.short_url)

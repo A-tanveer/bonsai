@@ -3,9 +3,11 @@
 {% block rightNav %}
     {% if user.is_authenticated %}
         <ul class="nav navbar-nav">
-            <li><h3>{{ user.get_username }} <span class="sr-only">    </span></h3></li>
+            {#            <li><h3>{{ user.get_username }} <span class="sr-only">    </span></h3></li>#}
+            <li class="active"><a href="#"> welcome! {{ user.get_username }} <span class="sr-only">(current)</span></a>
+            </li>
             <li class="active"><a href="/usersignout">Logout</a></li>
-            <span class="sr-only">(current)</span></a></li>
+            {#            <span class="sr-only">(current)</span></a></li>#}
         </ul>
 
     {% else %}
@@ -59,9 +61,10 @@
                     <button type="submit" class="btn btn-success" style="width: 200px">BONSAI</button>
                 </div>
                 {% if short_url %}
-                    <span class="form-control input-lg" style="background-color: transparent; color: lightcyan">Success!
+                    <br>
+                    <span class="form-control input-lg" style="background-color: transparent; color: green">Success!
                         Your Bonsai Url is: <input type="text" name="country" value={{ short_url }} readonly style=
-                                "background-color: transparent; border-color: transparent">
+                                "background-color: transparent; border-color: black">
                     </span>
                     {#                            <p>statistics: !l!a!t!e!r! <a href="{{ shorturl }}/stats">{{ shorturl }}/stats</a></p>#}
                 {% endif %}
